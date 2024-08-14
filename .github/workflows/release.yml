@@ -1,0 +1,47 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore
+        
+    - name: Build and Publish
+      run: |
+        rids=("win-x86" "win-x64" "osx-x64" "osx-arm64" "linux-x64")
+        for rid in "${rids[@]}"; do
+          dotnet publish -c Release -r $rid --self-contained --no-restore -o "artifacts/$rid"
+        done
+
+    - name: Package artifacts
+      run: |
+        rids=("win-x86" "win-x64" "osx-x64" "osx-arm64" "linux-x64")
+        version=${GITHUB_REF#refs/tags/}
+        mkdir -p artifacts/zips
+        for rid in "${rids[@]}"; do
+          zip -r "artifacts/zips/wpco-${version}-${rid}.zip" "artifacts/$rid"
+        done
+
+    - name: Create Release and Upload Artifacts
+      uses: softprops/action-gh-release@v1
+      with:
+        files: artifacts/zips/*.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+permissions:
+  contents: write
