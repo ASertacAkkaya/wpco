@@ -33,7 +33,7 @@ jobs:
         version=${GITHUB_REF#refs/tags/}
         mkdir -p artifacts/zips
         for rid in "${rids[@]}"; do
-          cd "artifacts/$rid" && zip -r "artifacts/zips/wpco-${version}-${rid}.zip"
+          cd "artifacts/$rid" && zip -r "../../zips/wpco-${version}-${rid}.zip" ./*
         done
 
     - name: Create Release and Upload Artifacts
