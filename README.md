@@ -2,8 +2,9 @@
 
 ## Features
 - Converts WebP images into PNG.
+- Directory batch conversion.
 - Autodetection for animated WebP files to be converted to GIF files.
+- Drag-and-drop support.
 
 ## Features to come
-- Drag-and-drop support.
 - Command-line configurations.
